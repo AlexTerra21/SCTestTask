@@ -19,12 +19,12 @@
                 <td><p>Цена</p></td>
                 <td></td>
             </tr>
-            @foreach (var b in ViewBag.Books)
+            @foreach (var b in ViewBag.Employees)
             {
                 <tr>
                     <td><p>@b.Name</p></td>
-                    <td><p>@b.Author</p></td>
-                    <td><p>@b.Price</p></td>
+                    <td><p>@b.Email</p></td>
+                    <td><p>@b.Salary</p></td>
                     <td><p><a href="/Home/Buy/@b.Id">Купить</a></p></td>
                 </tr>
             }
