@@ -6,7 +6,7 @@ using System.Data.Entity;
 
 namespace SCTestTask.Models
 {
-    public class EmployeesContext : DbContext
+    public class EmployeeContext : DbContext
     {
         public DbSet<Employee> Employees { get; set; }
     }

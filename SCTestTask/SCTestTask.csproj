@@ -213,6 +213,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\EmployeeDbInitializer.cs" />
     <Compile Include="Models\Employees.cs" />
     <Compile Include="Models\EmployeesContext.cs" />
     <Compile Include="Models\IdentityModels.cs" />

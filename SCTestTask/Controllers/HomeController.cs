@@ -10,13 +10,13 @@ namespace SCTestTask.Controllers
     public class HomeController : Controller
     {
         // создаем контекст данных
-        EmployeesContext db = new EmployeesContext();
+        EmployeeContext db = new EmployeeContext();
 
         public ActionResult Index()
         {
-            // получаем из бд все объекты Book
+            // получаем из бд все объекты Employees
             IEnumerable<Employee> lEmployees = db.Employees;
-            // передаем все объекты в динамическое свойство Books в ViewBag
+            // передаем все объекты в динамическое свойство Employees в ViewBag
             ViewBag.Employees = lEmployees;
             // возвращаем представление
             return View();
