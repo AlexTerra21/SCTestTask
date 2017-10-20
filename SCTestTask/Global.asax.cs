@@ -16,6 +16,7 @@ namespace SCTestTask
         {
             Database.SetInitializer(new EmployeeDbInitializer());
 
+
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
