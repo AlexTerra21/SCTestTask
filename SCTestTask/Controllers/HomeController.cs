@@ -34,6 +34,12 @@ namespace SCTestTask.Controllers
             return Json(lEmployees, JsonRequestBehavior.AllowGet); // Передача таблицы через JSON запрос
         }
 
+        public ActionResult GetCountElement()
+        {
+            return Json(db.Employees.Count<Employee>(),JsonRequestBehavior.AllowGet);
+        }
+
+
         /// <summary>
         /// Добавление сотрудника в базу данных
         /// </summary>
