@@ -98,16 +98,16 @@ class EmployeesList extends React.Component{
 
        onAddEmployee () {
         //window.open('http://google.com');
-		document.location.href = "home/add";
+		document.location.href = "home/add?id=1";
        }
 
-       onEditEmployee () {
-        document.location.href = "home/edit";
+       onEditEmployee (employee) {
+        document.location.href = "home/edit?id="+employee.Id;
        }
 
        // удаление объекта
        onRemoveEmployee(employee) {
-		alert("Employee deleted");
+		alert("Employee " + employee.Name + " deleted");
        }
        render(){
         var remove = this.onRemoveEmployee;

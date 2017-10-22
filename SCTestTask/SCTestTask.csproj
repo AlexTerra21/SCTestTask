@@ -230,7 +230,7 @@
     <Content Include="Images\add.png" />
     <Content Include="Images\delete.png" />
     <Content Include="Images\edit.png" />
-    <Content Include="Scripts\app.jsx" />
+    <Content Include="Scripts\jsx\app.jsx" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -241,6 +241,7 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\jsx\edit.jsx" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\react\react-dom-server.js" />
     <Content Include="Scripts\react\react-dom-server.min.js" />

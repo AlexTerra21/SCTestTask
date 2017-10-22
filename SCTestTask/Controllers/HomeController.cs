@@ -25,9 +25,10 @@ namespace SCTestTask.Controllers
         }
 
         [HttpGet]
-        public ActionResult Add()
+        public ActionResult Add(int id)
         {
             //ViewBag.BookId = id;
+            Console.WriteLine("Id="+id.ToString());
             return View();
         }
 
