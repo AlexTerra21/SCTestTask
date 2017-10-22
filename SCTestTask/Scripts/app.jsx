@@ -3,10 +3,15 @@
     constructor(props){
         super(props);
         this.state = {data: props.employee};
-        this.onClick = this.onClick.bind(this);
+        this.onRemoveClick = this.onRemoveClick.bind(this);
+        this.onEditClick = this.onEditClick.bind(this);
+        
     }
-    onClick(e){
+    onRemoveClick(e){
         this.props.onRemove(this.state.data);
+    }
+    onEditClick(e){
+        this.props.onEdit(this.state.data)
     }
     render(){
 		var pattern = /Date\(([^)]+)\)/;
@@ -24,8 +29,8 @@
 					<td><center>{date.toLocaleDateString()}</center></td>
 					<td>{this.state.data.Email}</td>
 					<td>{this.state.data.Salary}</td>
-					<td><button title="Edit"><img src="Images/edit.png" width="20px"/>Edit</button></td>
-					<td><button title="Remove"><img src="Images/delete.png" width="20px"/>Remove</button></td>
+					<td><button title="Edit" onClick={this.onEditClick}><img src="Images/edit.png" width="11px"/> Edit</button></td>
+					<td><button title="Remove" onClick={this.onRemoveClick}><img src="Images/delete.png" width="11px"/> Remove</button></td>
                 </tr>
     }
 }
@@ -36,8 +41,8 @@ class EmployeesList extends React.Component{
            super(props);
            this.state = { employees: [], count: 0};
     
-        //    this.onAddPhone = this.onAddPhone.bind(this);
-            this.onRemovePhone = this.onRemovePhone.bind(this);
+            this.onAddEmployee = this.onAddEmployee.bind(this);
+            this.onRemoveEmployee = this.onRemoveEmployee.bind(this);
        }
        // загрузка данных
       /*  loadData() {
@@ -91,60 +96,71 @@ class EmployeesList extends React.Component{
            //this.getCount();
        }
 
+       onAddEmployee () {
+        //window.open('http://google.com');
+		document.location.href = "home/add";
+       }
+
+       onEditEmployee () {
+        document.location.href = "home/edit";
+       }
+
        // удаление объекта
-       onRemovePhone(employee) {
+       onRemoveEmployee(employee) {
+		alert("Employee deleted");
        }
        render(){
-           var remove = this.onRemovePhone;
-           return <div>
-                   <h2>Employees list</h2>
-                   <button title="Add"><img src="Images/add.png" width="20px"/>Add</button>
-                   <div>
-                    <table>
-                        <thead>
-                        <tr>
-                            <td>
-                                <center>
-                                    <b>Name</b>
-                                    <button title="Sort Up">▲</button>
-                                    <button title="Sort Down">▼</button>
-                                </center>
-							</td>
-                            <td>
-                                <center>
-                                    <b>Birthday</b>
-                                    <button title="Sort Up">▲</button>
-                                    <button title="Sort Down">▼</button>
-                                </center>
-                            </td>
-                            <td>
-                                <center>
-                                    <b>Email</b>
-                                    <button title="Sort Up">▲</button>
-                                    <button title="Sort Down">▼</button>
-                                </center>
-                            </td>
-                            <td>
-                                <center>
-                                    <b>Salary</b>
-                                    <button title="Sort Up">▲</button>
-                                    <button title="Sort Down">▼</button>
-                                </center>
-                            </td>
-                            <td></td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                this.state.employees.map(function(employee){
-                                    return <Employee key={employee.Id} employee={employee} onRemove={remove} />
-                                })
-                            }
-					    </tbody>
-                    </table>
-                    <p>Количество сотрудников {this.state.count}</p>
-                   </div>
-           </div>;
+        var remove = this.onRemoveEmployee;
+        var edit = this.onEditEmployee; 
+        return <div>
+                <h2>Employees list</h2>
+                <button title="Add" onClick={this.onAddEmployee}><img src="Images/add.png" width="12px"/> Add</button>
+                <div>
+                <table>
+                    <thead>
+                    <tr>
+                        <td>
+                            <center>
+                                <b>Name</b>
+                                <button title="Sort Up">▲</button>
+                                <button title="Sort Down">▼</button>
+                            </center>
+                        </td>
+                        <td>
+                            <center>
+                                <b>Birthday</b>
+                                <button title="Sort Up">▲</button>
+                                <button title="Sort Down">▼</button>
+                            </center>
+                        </td>
+                        <td>
+                            <center>
+                                <b>Email</b>
+                                <button title="Sort Up">▲</button>
+                                <button title="Sort Down">▼</button>
+                            </center>
+                        </td>
+                        <td>
+                            <center>
+                                <b>Salary</b>
+                                <button title="Sort Up">▲</button>
+                                <button title="Sort Down">▼</button>
+                            </center>
+                        </td>
+                        <td></td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            this.state.employees.map(function(employee){
+                                return <Employee key={employee.Id} employee={employee} onRemove={remove} onEdit={edit} />
+                            })
+                        }
+                    </tbody>
+                </table>
+                <p>Количество сотрудников {this.state.count}</p>
+                </div>
+        </div>;
        }
    }
 

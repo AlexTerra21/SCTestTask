@@ -24,6 +24,21 @@ namespace SCTestTask.Controllers
             return View();
         }
 
+        [HttpGet]
+        public ActionResult Add()
+        {
+            //ViewBag.BookId = id;
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult Edit()
+        {
+            //ViewBag.BookId = id;
+            return View();
+        }
+
+
         /// <summary>
         /// Через JSON-запрос возвращаем список сотрудников
         /// </summary>
@@ -38,6 +53,7 @@ namespace SCTestTask.Controllers
         {
             return Json(db.Employees.Count<Employee>(),JsonRequestBehavior.AllowGet);
         }
+
 
 
         /// <summary>
