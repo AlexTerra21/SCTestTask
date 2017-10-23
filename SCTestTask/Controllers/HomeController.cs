@@ -40,6 +40,13 @@ namespace SCTestTask.Controllers
         }
 
 
+        [HttpPost]
+        public ActionResult GetEmployee(int id)
+        {
+            Employee lEmployee = db.Employees.FirstOrDefault(x => x.Id == id);
+            return Json(lEmployee, JsonRequestBehavior.AllowGet); // Передача таблицы через JSON запрос
+        }
+
         /// <summary>
         /// Через JSON-запрос возвращаем список сотрудников
         /// </summary>
@@ -55,18 +62,31 @@ namespace SCTestTask.Controllers
             return Json(db.Employees.Count<Employee>(),JsonRequestBehavior.AllowGet);
         }
 
-
-
         /// <summary>
-        /// Добавление сотрудника в базу данных
+        /// Добавление сотрудника в базу данных или обновление данных о сотруднике
+        /// Если Id == 0 сотрудник будет добавлен
+        /// иначе информация о сотруднике будет обновлена
         /// </summary>
         /// <param name="aEmployee"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult AddEmployee(Employee aEmployee)
+        public ActionResult AddReplaceEmployee(Employee aEmployee)
         {
-            //aEmployee.Id = Guid.NewGuid().ToString();
-            db.Employees.Add(aEmployee);
+            // Добавляем 12 часов для правильного отображения даты
+            if (aEmployee.Birthday.Hour == 0) aEmployee.Birthday = aEmployee.Birthday.AddHours(12);
+            if (aEmployee.Id == 0)
+            {
+                db.Employees.Add(aEmployee);
+            }
+            else
+            {
+                Employee lEmployee = db.Employees.FirstOrDefault(x => x.Id == aEmployee.Id);
+                lEmployee.Name = aEmployee.Name;
+                lEmployee.Birthday = aEmployee.Birthday; 
+                lEmployee.Email = aEmployee.Email;
+                lEmployee.Salary = aEmployee.Salary;
+            }
+            db.SaveChanges();
             return Json(aEmployee);
         }
 

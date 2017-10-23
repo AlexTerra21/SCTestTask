@@ -15,14 +15,10 @@
     }
     render(){
 		var pattern = /Date\(([^)]+)\)/;
-		
 		var results = pattern.exec(this.state.data.Birthday);
-
-		 
-
-		console.log(results);
+		//console.log(results);
 		var date = new Date(parseFloat(results[1]));
-		console.log(date);
+		//console.log(date);
 
         return <tr>
 					<td>{this.state.data.Name}</td>
@@ -45,17 +41,6 @@ class EmployeesList extends React.Component{
             this.onRemoveEmployee = this.onRemoveEmployee.bind(this);
        }
        // загрузка данных
-      /*  loadData() {
-           var xhr = new XMLHttpRequest();
-           xhr.open("get", this.props.getUrl, true);
-           xhr.onload = function () {
-               var data = JSON.parse(xhr.responseText);
-               this.setState({ employees: data });
-           }.bind(this);
-           xhr.send();
-        
-       } */
-
        ajaxLoadData() {
             $.ajax({
                 url:  this.props.getUrl,
@@ -80,29 +65,20 @@ class EmployeesList extends React.Component{
                 console.error(this.props.countUrl, status, err.toString());
             }.bind(this)
         });
-        //    var xhr1 = new XMLHttpRequest();
-        //    xhr1.open("get", this.props.getCount, true);
-        //    xhr1.onload = function () {
-        //        var data = JSON.parse(xhr1.responseText);
-        //        this.setState({ count: data });
-        //    }.bind(this);
-        //    xhr1.send();
        }
 
        componentDidMount() {
            this.ajaxLoadData();
            this.ajaxGetCount();
-           //this.loadData();
-           //this.getCount();
        }
 
        onAddEmployee () {
         //window.open('http://google.com');
-		document.location.href = "home/add?id=1";
+		document.location.href = "/home/add?id=0";
        }
 
        onEditEmployee (employee) {
-        document.location.href = "home/edit?id="+employee.Id;
+        document.location.href = "/home/edit?id="+employee.Id;
        }
 
        // удаление объекта
