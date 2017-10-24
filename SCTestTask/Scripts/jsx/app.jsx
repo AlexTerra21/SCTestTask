@@ -82,9 +82,38 @@ class EmployeesList extends React.Component{
        }
 
        // удаление объекта
-       onRemoveEmployee(employee) {
-		alert("Employee " + employee.Name + " deleted");
+       onRemoveEmployee(employee) { 
+        
+            var data_id = { 'id': employee.Id };
+            console.log('id = ' + employee.Id);
+            $.ajax({
+                url:  this.props.deleteUrl,
+                type: 'POST',
+                dataType: 'json',
+                data: data_id,
+                success: function (data) {
+                    alert("Employee " + employee.Name + " deleted");
+                    this.ajaxLoadData();
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.error(this.props.deleteUrl, status, err.toString());
+                }.bind(this)
+            });
        }
+
+       onLogout () {
+        $.ajax({
+            url:  this.props.logoutUrl,
+            dataType: 'json',
+            success: function (data) {
+                document.location.href = "/home";
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error(this.props.logoutUrl, status, err.toString());
+            }.bind(this)
+        });
+       }
+
        render(){
         var remove = this.onRemoveEmployee;
         var edit = this.onEditEmployee; 
@@ -134,15 +163,17 @@ class EmployeesList extends React.Component{
                         }
                     </tbody>
                 </table>
-                <p>Количество сотрудников {this.state.count}</p>
+                <p>Количество сотрудников {this.state.count}</p><br/>
+                <button title="Logout" onClick={this.onLogout.bind(this)}>Logout</button>
                 </div>
         </div>;
        }
    }
 
 
-ReactDOM.render(
-    <EmployeesList getUrl="/home/getemployees" postUrl="/home/addemploee" deleteUrl="/home/deleteemployee" countUrl="/home/getcountelement" />,
+ReactDOM.render( 
+    <EmployeesList getUrl="/home/getemployees" postUrl="/home/addemploee" deleteUrl="/home/deleteemployee" countUrl="/home/getcountelement" 
+                   logoutUrl="/account/logoff" />,
     document.getElementById("content")
   );
 

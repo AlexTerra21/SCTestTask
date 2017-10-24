@@ -18,6 +18,9 @@ namespace SCTestTask.Models
             db.Employees.Add(new Employee { Name = "Майем Биалик", Birthday = new DateTime(1975, 12, 12, 12, 00, 00), Email = "bialik@hollywood.com", Salary = 15000 });
             db.Employees.Add(new Employee { Name = "Мелисса Рауш", Birthday = new DateTime(1980, 6, 23, 12, 00, 00), Email = "rauch@hollywood.com", Salary = 16000 });
             db.Employees.Add(new Employee { Name = "Кэрол Энн Сьюзи", Birthday = new DateTime(1952, 2, 2, 12, 00, 00), Email = "susi@hollywood.com", Salary = 17000 });
+
+            db.Users.Add(new User { Login = "admin", Password = "admin" });
+
             base.Seed(db);
         }
     }

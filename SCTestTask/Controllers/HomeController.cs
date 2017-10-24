@@ -11,19 +11,16 @@ namespace SCTestTask.Controllers
     {
         // создаем контекст данных
         EmployeeContext db = new EmployeeContext();
-        
 
-
+        List<Employee> mEmployees = null;
+        [Authorize]
         public ActionResult Index()
         {
-            //// получаем из бд все объекты Employees
-            //IEnumerable<Employee> lEmployees = db.Employees;
-            //// передаем все объекты в динамическое свойство Employees в ViewBag
-            //ViewBag.Employees = lEmployees;
-            //// возвращаем представление
+            // возвращаем представление
             return View();
         }
 
+        [Authorize]
         [HttpGet]
         public ActionResult Add(int id)
         {
@@ -32,6 +29,7 @@ namespace SCTestTask.Controllers
             return View();
         }
 
+        [Authorize]
         [HttpGet]
         public ActionResult Edit()
         {
@@ -39,7 +37,12 @@ namespace SCTestTask.Controllers
             return View();
         }
 
-
+        /// <summary>
+        /// Получить сотрудника по id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize]
         [HttpPost]
         public ActionResult GetEmployee(int id)
         {
@@ -51,12 +54,18 @@ namespace SCTestTask.Controllers
         /// Через JSON-запрос возвращаем список сотрудников
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         public ActionResult GetEmployees()
         {
-            IEnumerable<Employee> lEmployees = db.Employees;
-            return Json(lEmployees, JsonRequestBehavior.AllowGet); // Передача таблицы через JSON запрос
+            if (mEmployees == null) 
+            {
+                mEmployees = db.Employees.ToList<Employee>();
+            }
+            //IEnumerable<Employee> lEmployees = db.Employees;
+            return Json(mEmployees, JsonRequestBehavior.AllowGet); // Передача таблицы через JSON запрос
         }
 
+        [Authorize]
         public ActionResult GetCountElement()
         {
             return Json(db.Employees.Count<Employee>(),JsonRequestBehavior.AllowGet);
@@ -69,6 +78,7 @@ namespace SCTestTask.Controllers
         /// </summary>
         /// <param name="aEmployee"></param>
         /// <returns></returns>
+        [Authorize]
         [HttpPost]
         public ActionResult AddReplaceEmployee(Employee aEmployee)
         {
@@ -95,13 +105,15 @@ namespace SCTestTask.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete]
+        [Authorize]
+        [HttpPost]
         public ActionResult DeleteEmployee(int id)
         {
             Employee lEmployee = db.Employees.FirstOrDefault(x => x.Id == id);
             if (lEmployee != null)
             {
                 db.Employees.Remove(lEmployee);
+                db.SaveChanges();
                 return Json(lEmployee);
             }
             return HttpNotFound();
