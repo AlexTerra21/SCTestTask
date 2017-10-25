@@ -16,7 +16,6 @@ namespace SCTestTask.Controllers
         }
 
         [HttpPost]
-        //[ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel model)
         {
             // поиск пользователя в бд

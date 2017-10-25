@@ -32,7 +32,8 @@ class EditForm extends React.Component{
                     var pattern = /Date\(([^)]+)\)/;
                     var results = pattern.exec(data.Birthday);
                     var date = new Date(parseFloat(results[1]));
-                    var strDate = date.getFullYear() + '-' + ('0' + date.getMonth()).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                    var strDate = date.getFullYear() + '-' + ('0' + (date.getMonth()+1)).slice(-2) +
+                                                       '-' + ('0' + date.getDate()).slice(-2);
                     this.setState({birthday: strDate});
                     this.setState({email: data.Email});
                     this.setState({salary: data.Salary});
@@ -63,12 +64,45 @@ class EditForm extends React.Component{
     onSalaryChange (event) {
         this.setState({salary: event.target.value});
     }
-    
+    // Отмена ввода формы
     onCancel () {
         document.location.href = "/home";
     }
 
+    validateForm () {
+        var valid = true;
+        if (this.state.name.trim() == '') { // name
+            document.getElementById('nameMessage').innerHTML = 'Enter name.';
+            valid = false;
+        }  
+        // birthbay
+        var dateStrSrc = this.state.birthday;
+        var date = new Date(dateStrSrc);
+        var dateStrDest = date.getFullYear() + '-' + ('0' + (date.getMonth()+1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+        if(dateStrSrc != dateStrDest) {
+            document.getElementById('birthdayMessage').innerHTML = 'Incorrect date.';
+            valid = false;           
+        }
+        var adr_pattern = /[0-9a-z_-]+@[0-9a-z_-]+\.[a-z]{2,5}/i;
+        if (!adr_pattern.test(this.state.email)) {
+            document.getElementById('emailMessage').innerHTML = 'Incorrect email.';
+            valid = false;
+        } 
+        if (this.state.email.trim() == '') { // email
+            document.getElementById('emailMessage').innerHTML = 'Enter email.';
+            valid = false;
+        }  
+        if (this.state.salary < 0) {
+            document.getElementById('salaryMessage').innerHTML = 'The salary should be greater than zero.';
+            valid = false;
+        }
+        return valid;
+    }
+
+
+    // сохранение данных фромы
     onSave () {
+        if (!this.validateForm()) return; // Если валидация не прошла - выход 
         var data = { 'Id' : this.state.id,
                      'Name': this.state.name, 
                      'Birthday': this.state.birthday, 
@@ -93,10 +127,14 @@ class EditForm extends React.Component{
     render () {
         return <div>
             <h2>Elployee data</h2>
-            <label>Name     </label><input type="text"   value={this.state.name}     onChange={this.onNameChange.bind(this)}/><br/>
-            <label>Birthday </label><input type="date"   value={this.state.birthday} onChange={this.onBirthdayChange.bind(this)}/><br/>
-            <label>Email    </label><input type="email"  value={this.state.email}    onChange={this.onEmailChange.bind(this)}/><br/>
-            <label>Salary   </label><input type="number" value={this.state.salary}   onChange={this.onSalaryChange.bind(this)}/><br/>
+            <label>Name     </label><input type="text"   value={this.state.name}     onChange={this.onNameChange.bind(this)}/>
+                                    <div id="nameMessage" style={{color:'red'}}></div><br/>
+            <label>Birthday </label><input type="date"   value={this.state.birthday} onChange={this.onBirthdayChange.bind(this)}/>
+                                    <div id="birthdayMessage" style={{color:'red'}}></div><br/>
+            <label>Email    </label><input type="email"  value={this.state.email}    onChange={this.onEmailChange.bind(this)}/>
+                                    <div id="emailMessage" style={{color:'red'}}></div><br/>
+            <label>Salary   </label><input type="number" value={this.state.salary}   onChange={this.onSalaryChange.bind(this)}/>
+                                    <div id="salaryMessage" style={{color:'red'}}></div><br/>
             <input type="submit" value='Save' onClick={this.onSave.bind(this)}/> 
             <input type="reset" value='Cancel' onClick={this.onCancel.bind(this)}/> 
         </div>
