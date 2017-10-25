@@ -83,7 +83,7 @@ class EmployeesList extends React.Component{
 
        // удаление объекта
        onRemoveEmployee(employee) { 
-        
+            if (!confirm("Delete employee " + employee.Name + "?")) return;
             var data_id = { 'id': employee.Id };
             console.log('id = ' + employee.Id);
             $.ajax({
@@ -92,8 +92,8 @@ class EmployeesList extends React.Component{
                 dataType: 'json',
                 data: data_id,
                 success: function (data) {
-                    alert("Employee " + employee.Name + " deleted");
                     this.ajaxLoadData();
+                    this.ajaxGetCount();
                 }.bind(this),
                 error: function (xhr, status, err) {
                     console.error(this.props.deleteUrl, status, err.toString());
