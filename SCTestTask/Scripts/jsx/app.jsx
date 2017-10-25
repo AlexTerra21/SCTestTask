@@ -35,16 +35,23 @@ class EmployeesList extends React.Component{
     
        constructor(props){
            super(props);
-           this.state = { employees: [], count: 0};
+           this.state = { employees: [], count: 0, sortColumn:'None', sortDirection:'None'};
     
             this.onAddEmployee = this.onAddEmployee.bind(this);
             this.onRemoveEmployee = this.onRemoveEmployee.bind(this);
+            this.onSetSortParams = this.onSetSortParams.bind(this);
        }
        // загрузка данных
        ajaxLoadData() {
+            console.log('ajaxLoadData');
+            var data = { 'aColumn': this.state.sortColumn,
+                         'aDirection': this.state.sortDirection};
+            console.log(data.aColumn+data.aDirection);
             $.ajax({
                 url:  this.props.getUrl,
+                type: 'POST',
                 dataType: 'json',
+                data: data,
                 success: function (data) {
                     this.setState({ employees: data });
                 }.bind(this),
@@ -55,6 +62,7 @@ class EmployeesList extends React.Component{
        }
 
        ajaxGetCount() {
+        
         $.ajax({
             url:  this.props.countUrl,
             dataType: 'json',
@@ -72,17 +80,42 @@ class EmployeesList extends React.Component{
            this.ajaxGetCount();
        }
 
-       onAddEmployee () {
+
+       onSetSortParams (column, direction) {
+           console.log(column + direction);
+           this.setState({sortColumn: column});
+           this.setState({sortDirection: direction});
+           console.log(this.state.sortColumn+this.state.sortDirection);
+           sleep(2000);
+           this.ajaxLoadData()
+        // var data = { 'aColumn': column,
+        //              'aDirection': direction};
+        // $.ajax({
+        //     url:  this.props.sortUrl,
+        //     type: 'POST',
+        //     dataType: 'json',
+        //     data: data,
+        //     success: function (data) {
+        //         console.log('success');
+        //         this.ajaxLoadData();
+        //     }.bind(this),
+        //     error: function (xhr, status, err) {
+        //         console.error(this.props.sortUrl, status, err.toString());
+        //     }.bind(this)
+        // });
+       }
+
+       onAddEmployee  () {
         //window.open('http://google.com');
 		document.location.href = "/home/add?id=0";
        }
 
-       onEditEmployee (employee) {
+       onEditEmployee  (employee)  {
         document.location.href = "/home/edit?id="+employee.Id;
        }
 
        // удаление объекта
-       onRemoveEmployee(employee) { 
+       onRemoveEmployee  (employee)  { 
             if (!confirm("Delete employee " + employee.Name + "?")) return;
             var data_id = { 'id': employee.Id };
             console.log('id = ' + employee.Id);
@@ -127,29 +160,29 @@ class EmployeesList extends React.Component{
                         <td>
                             <center>
                                 <b>Name</b>
-                                <button title="Sort Up">▲</button>
-                                <button title="Sort Down">▼</button>
+                                <input type="button" title="Ascending" value='▲' onClick={this.onSetSortParams.bind(null,'Name','Ascending')}/>
+                                <input type="button" title="Descending" value='▼' onClick={this.onSetSortParams.bind(null,'Name','Descending')}/>
                             </center>
                         </td>
                         <td>
                             <center>
                                 <b>Birthday</b>
-                                <button title="Sort Up">▲</button>
-                                <button title="Sort Down">▼</button>
+                                <button title="Ascending">▲</button>
+                                <button title="Descending">▼</button>
                             </center>
                         </td>
                         <td>
                             <center>
                                 <b>Email</b>
-                                <button title="Sort Up">▲</button>
-                                <button title="Sort Down">▼</button>
+                                <button title="Ascending">▲</button>
+                                <button title="Descending">▼</button>
                             </center>
                         </td>
                         <td>
                             <center>
                                 <b>Salary</b>
-                                <button title="Sort Up">▲</button>
-                                <button title="Sort Down">▼</button>
+                                <button title="Ascending">▲</button>
+                                <button title="Descending">▼</button>
                             </center>
                         </td>
                         <td></td>
@@ -173,7 +206,7 @@ class EmployeesList extends React.Component{
 
 ReactDOM.render( 
     <EmployeesList getUrl="/home/getemployees" postUrl="/home/addemploee" deleteUrl="/home/deleteemployee" countUrl="/home/getcountelement" 
-                   logoutUrl="/account/logoff" />,
+                   logoutUrl="/account/logoff" sortUrl="/home/setsortparametrs"/>,
     document.getElementById("content")
   );
 
