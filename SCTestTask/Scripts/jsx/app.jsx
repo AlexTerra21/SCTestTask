@@ -83,11 +83,16 @@ class EmployeesList extends React.Component{
 
        onSetSortParams (column, direction) {
            console.log(column + direction);
-           this.setState({sortColumn: column});
-           this.setState({sortDirection: direction});
-           console.log(this.state.sortColumn+this.state.sortDirection);
-           sleep(2000);
-           this.ajaxLoadData()
+           this.setState({sortColumn: column}, function () {
+			   this.setState({sortDirection: direction}, function () {
+					console.log(this.state.sortColumn+this.state.sortDirection);
+					this.ajaxLoadData();
+			   });
+		   });
+        //   this.setState({sortDirection: direction});
+        //   console.log(this.state.sortColumn+this.state.sortDirection);
+        //   sleep(2000);
+           
         // var data = { 'aColumn': column,
         //              'aDirection': direction};
         // $.ajax({
@@ -167,22 +172,22 @@ class EmployeesList extends React.Component{
                         <td>
                             <center>
                                 <b>Birthday</b>
-                                <button title="Ascending">▲</button>
-                                <button title="Descending">▼</button>
+                                <input type="button" title="Ascending" value='▲' onClick={this.onSetSortParams.bind(null,'Birthday','Ascending')}/>
+                                <input type="button" title="Descending" value='▼' onClick={this.onSetSortParams.bind(null,'Birthday','Descending')}/>
                             </center>
                         </td>
                         <td>
                             <center>
                                 <b>Email</b>
-                                <button title="Ascending">▲</button>
-                                <button title="Descending">▼</button>
+                                <input type="button" title="Ascending" value='▲' onClick={this.onSetSortParams.bind(null,'Email','Ascending')}/>
+                                <input type="button" title="Descending" value='▼' onClick={this.onSetSortParams.bind(null,'Email','Descending')}/>
                             </center>
                         </td>
                         <td>
                             <center>
                                 <b>Salary</b>
-                                <button title="Ascending">▲</button>
-                                <button title="Descending">▼</button>
+                                <input type="button" title="Ascending" value='▲' onClick={this.onSetSortParams.bind(null,'Salary','Ascending')}/>
+                                <input type="button" title="Descending" value='▼' onClick={this.onSetSortParams.bind(null,'Salary','Descending')}/>
                             </center>
                         </td>
                         <td></td>
