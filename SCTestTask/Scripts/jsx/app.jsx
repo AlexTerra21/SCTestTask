@@ -52,7 +52,7 @@ class EmployeesList extends React.Component{
            super(props);
            this.state = { employees: [], count: 0, 
                           sortColumn:'None', sortDirection:'None',
-                          currentPage : 2, totalPage: 0
+                          currentPage : 1, totalPage: 0
                         };
     
             this.onAddEmployee = this.onAddEmployee.bind(this);
