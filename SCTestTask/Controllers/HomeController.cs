@@ -64,13 +64,16 @@ namespace SCTestTask.Controllers
         /// </summary>
         /// <returns></returns>
         [Authorize]
-        public ActionResult GetEmployees(string aColumn, string aDirection)
+        public ActionResult GetEmployees(string aColumn, string aDirection, int? aCurrentPage, int? aTotalPage)
         {
             //if (mEmployees == null) 
             //{
             //    mEmployees = db.Employees.ToList<Employee>();
             //}
-            IEnumerable<Employee> lEmployees = SortEmployeeList(db.Employees.ToList<Employee>(), aColumn, aDirection);
+            List<Employee> lEmployees = SortEmployeeList(db.Employees.ToList<Employee>(), aColumn, aDirection);
+            int lIndex = 10 * ((int)aCurrentPage - 1);
+            int lCount = db.Employees.Count() - lIndex < 10 ? db.Employees.Count() - lIndex : 10;
+            lEmployees = lEmployees.GetRange(lIndex, lCount);
             return Json(lEmployees, JsonRequestBehavior.AllowGet); // Передача таблицы через JSON запрос
         }
 

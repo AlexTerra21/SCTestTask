@@ -31,21 +31,49 @@
     }
 }
 
+class PageButton extends React.Component {
+    constructor(props) { 
+        super(props);
+        this.state = {i: this.props.i}
+    }
+
+    goToPage (i) {
+        this.props.goToPage(i);
+    }
+
+    render () {
+        return <button onClick={this.goToPage.bind(this,this.state.i)}> {this.state.i} </button>
+    }
+}
+
 class EmployeesList extends React.Component{
     
        constructor(props){
            super(props);
-           this.state = { employees: [], count: 0, sortColumn:'None', sortDirection:'None'};
+           this.state = { employees: [], count: 0, 
+                          sortColumn:'None', sortDirection:'None',
+                          currentPage : 2, totalPage: 0
+                        };
     
             this.onAddEmployee = this.onAddEmployee.bind(this);
             this.onRemoveEmployee = this.onRemoveEmployee.bind(this);
             this.onSetSortParams = this.onSetSortParams.bind(this);
+            this.getPageCount = this.getPageCount.bind(this);
+            this.goToPage = this.goToPage.bind(this);
        }
+
+    componentDidMount() {
+        this.initialize();
+    }
+
        // загрузка данных
-       ajaxLoadData() {
+       LoadData() {
             console.log('ajaxLoadData');
             var data = { 'aColumn': this.state.sortColumn,
-                         'aDirection': this.state.sortDirection};
+                         'aDirection': this.state.sortDirection,
+                         'aCurrentPage' : this.state.currentPage,
+                         'aTotalPage' : this.state.totalPage
+                       };
             console.log(data.aColumn+data.aDirection);
             $.ajax({
                 url:  this.props.getUrl,
@@ -61,23 +89,22 @@ class EmployeesList extends React.Component{
             });
        }
 
-       ajaxGetCount() {
+       initialize() {
         
         $.ajax({
             url:  this.props.countUrl,
             dataType: 'json',
             success: function (data) {
-                this.setState({ count: data });
+                this.setState({ count: data }, function () {
+                    this.setState({totalPage: this.getPageCount()}, function () {
+                        this.LoadData();
+                    });
+                });
             }.bind(this),
             error: function (xhr, status, err) {
                 console.error(this.props.countUrl, status, err.toString());
             }.bind(this)
         });
-       }
-
-       componentDidMount() {
-           this.ajaxLoadData();
-           this.ajaxGetCount();
        }
 
 
@@ -86,28 +113,9 @@ class EmployeesList extends React.Component{
            this.setState({sortColumn: column}, function () {
 			   this.setState({sortDirection: direction}, function () {
 					console.log(this.state.sortColumn+this.state.sortDirection);
-					this.ajaxLoadData();
+					this.LoadData();
 			   });
 		   });
-        //   this.setState({sortDirection: direction});
-        //   console.log(this.state.sortColumn+this.state.sortDirection);
-        //   sleep(2000);
-           
-        // var data = { 'aColumn': column,
-        //              'aDirection': direction};
-        // $.ajax({
-        //     url:  this.props.sortUrl,
-        //     type: 'POST',
-        //     dataType: 'json',
-        //     data: data,
-        //     success: function (data) {
-        //         console.log('success');
-        //         this.ajaxLoadData();
-        //     }.bind(this),
-        //     error: function (xhr, status, err) {
-        //         console.error(this.props.sortUrl, status, err.toString());
-        //     }.bind(this)
-        // });
        }
 
        onAddEmployee  () {
@@ -130,8 +138,7 @@ class EmployeesList extends React.Component{
                 dataType: 'json',
                 data: data_id,
                 success: function (data) {
-                    this.ajaxLoadData();
-                    this.ajaxGetCount();
+                    this.initialize();
                 }.bind(this),
                 error: function (xhr, status, err) {
                     console.error(this.props.deleteUrl, status, err.toString());
@@ -152,12 +159,41 @@ class EmployeesList extends React.Component{
         });
        }
 
+       getPageCount() {
+           var employeeCount = this.state.count;
+           console.log('employeeCount = ' + employeeCount);
+           return Math.ceil(employeeCount  / 10 ) ;
+       }
+
+    //    getEmployeeCount () {
+           
+    //     if (this.state.count)
+    //         return this.state.count;
+    //     else 
+    //         return 0;
+    //    }
+
+       goToPage (i) {
+           //alert('Page #' + i);
+           this.setState({currentPage: i}, function () {
+               this.LoadData();
+           });
+       }
+       
+
        render(){
         var remove = this.onRemoveEmployee;
         var edit = this.onEditEmployee; 
+        var pageCount = this.getPageCount;
+        var goToPage = this.goToPage;
+        var pageButtons = [];
+        for (var i = 0; i < this.getPageCount(); i++ ) pageButtons.push(i+1);
+        console.log(pageButtons);
+        console.log('EmployeesList this.state.count  = ' + this.state.count);
         return <div>
                 <h2>Employees list</h2>
                 <button title="Add" onClick={this.onAddEmployee}><img src="Images/add.png" width="12px"/> Add</button>
+                <hr/>
                 <div>
                 <table>
                     <thead>
@@ -201,7 +237,18 @@ class EmployeesList extends React.Component{
                         }
                     </tbody>
                 </table>
-                <p>Количество сотрудников {this.state.count}</p><br/>
+                <hr/>
+                <div>Количество сотрудников <b>{this.state.count}</b></div>
+                <div>Страница <b>{this.state.currentPage}</b> из <b>{this.state.totalPage}</b></div>
+                <div>
+                {
+                    pageButtons.map(function (i) {
+                       return <PageButton key={i} i={i} goToPage={goToPage}/>
+                    })
+                }
+                </div>
+                
+                <br/>
                 <button title="Logout" onClick={this.onLogout.bind(this)}>Logout</button>
                 </div>
         </div>;
