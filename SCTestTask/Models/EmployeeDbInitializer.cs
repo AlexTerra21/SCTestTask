@@ -8,7 +8,7 @@ namespace SCTestTask.Models
 {
     public class EmployeeDbInitializer : DropCreateDatabaseAlways<EmployeeContext>
     {
-        protected override void Seed(EmployeeContext db)
+        protected override void Seed(EmployeeContext db)  // Начальная инициализация базы тестовыми записями
         {
             db.Employees.Add(new Employee { Name = "Джонни Галэки", Birthday = new DateTime(1975, 4, 30, 12, 00, 00), Email = "galecki@hollywood.com", Salary = 11000 });
             db.Employees.Add(new Employee { Name = "Джим Парсонс", Birthday = new DateTime(1973, 3, 24, 12, 00, 00), Email = "parsons@hollywood.com", Salary = 100000 });
@@ -32,7 +32,7 @@ namespace SCTestTask.Models
             db.Employees.Add(new Employee { Name = "Кейси Сэндер", Birthday = new DateTime(1956, 6, 6, 12, 00, 00), Email = "sander@hollywood.com", Salary = 94000 });
             db.Employees.Add(new Employee { Name = "Кэти Леклерк", Birthday = new DateTime(1986, 11, 6, 12, 00, 00), Email = "leclerc@hollywood.com", Salary = 73000 });
             
-            db.Users.Add(new User { Login = "admin", Password = "admin" });
+            db.Users.Add(new User { Login = "admin", Password = "admin" }); // Пользователь по умолчанию
 
             base.Seed(db);
         }

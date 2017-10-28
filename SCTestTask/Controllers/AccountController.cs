@@ -14,28 +14,34 @@ namespace SCTestTask.Controllers
         {
             return View();
         }
-
+        /// <summary>
+        /// Регистрация в системе
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult Login(LoginModel model)
         {
-            // поиск пользователя в бд
             User user = null;
             using (EmployeeContext db = new EmployeeContext())
             {
-                user = db.Users.FirstOrDefault(u => u.Login == model.Name && u.Password == model.Password);
+                user = db.Users.FirstOrDefault(u => u.Login == model.Name && u.Password == model.Password);  // Поиск пользователя в бд
             }
-            if (user != null)
+            if (user != null) // Пользователь найден
             {
-                FormsAuthentication.SetAuthCookie(model.Name, true);
+                FormsAuthentication.SetAuthCookie(model.Name, true); // Подключаем аутентификационные куки
                 return Json(new { result = true, message = "Authentication success" }, JsonRequestBehavior.AllowGet); 
             }
-            return Json(new { result = false, message = "Authentication error" }, JsonRequestBehavior.AllowGet); 
+            return Json(new { result = false, message = "Authentication error" }, JsonRequestBehavior.AllowGet);  // ... иначе возвращаем сообщение.
         }
 
-        
+        /// <summary>
+        /// Выход из системы
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Logoff()
         {
-            FormsAuthentication.SignOut();
+            FormsAuthentication.SignOut(); // Очистка данных аутентификации
             return Json(new { result = true }, JsonRequestBehavior.AllowGet);
         }
     }

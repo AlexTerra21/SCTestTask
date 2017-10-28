@@ -4,38 +4,6 @@
 
 <!DOCTYPE html>
 
-@*<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Список сотрудников</title>
-</head>
-<body>
-    <div>
-        <h3>Теория большого взрыва</h3> 
-        <table>
-            <tr>
-                <td><p>Имя актера</p></td>
-                <td><p>Дата рождения</p></td>
-                <td><p>Почта</p></td>
-                <td><p>Оклад</p></td>
-                <td></td>
-            </tr>
-            @foreach (var b in ViewBag.Employees)
-            {
-                <tr>
-                    <td><p>@b.Name</p></td>
-                    <td><p>@b.Birthday</p></td>
-                    <td><p>@b.Email</p></td>
-                    <td><p>@b.Salary</p></td>
-                    <td><button title="Удалить">Удалить</button></td>
-                    <td><button title="Редактировать" name="Редактировать">Редактировать</button></td>
-                </tr>
-            }
-        </table>
-    </div>
-</body>
-</html>*@
-
 <html>
 <head>
     <title>Employees list</title>
@@ -45,8 +13,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-dom.js"></script>
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-    @*<script src="~/Scripts/react/react.min.js"></script>
-    <script src="~/Scripts/react/react-dom.min.js"></script>*@
     <script src='@Url.Content("~/Scripts/jsx/app.jsx")'></script>
 </body>
 </html> 

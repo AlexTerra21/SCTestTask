@@ -14,18 +14,10 @@ namespace SCTestTask.Controllers
         /// </summary>
         EmployeeContext db = new EmployeeContext();
 
-        /// <summary>
-        /// Поле для хранения списка
-        /// </summary>
-        //List<Employee> mEmployees = null;
-
-        //string mSortColumn = "None";
-        //string mSortDirection = "None";
-
         [Authorize]
         public ActionResult Index()
         {
-            // возвращаем представление
+            // Возвращаем представление
             return View();
         }
 
@@ -33,8 +25,6 @@ namespace SCTestTask.Controllers
         [HttpGet]
         public ActionResult Add(int id)
         {
-            //ViewBag.BookId = id;
-            Console.WriteLine("Id="+id.ToString());
             return View();
         }
 
@@ -42,41 +32,44 @@ namespace SCTestTask.Controllers
         [HttpGet]
         public ActionResult Edit()
         {
-            //ViewBag.BookId = id;
             return View();
         }
 
         /// <summary>
         /// Получить сотрудника по id
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">id сотрудника</param>
+        /// <returns>JSON объект с данными сотрудника</returns>
         [Authorize]
         [HttpPost]
         public ActionResult GetEmployee(int id)
         {
-            Employee lEmployee = db.Employees.FirstOrDefault(x => x.Id == id);
-            return Json(lEmployee, JsonRequestBehavior.AllowGet); // Передача таблицы через JSON запрос
+            Employee lEmployee = db.Employees.FirstOrDefault(x => x.Id == id); // Поиск сотрудника в базе
+            return Json(lEmployee, JsonRequestBehavior.AllowGet); // Передача данных сотрудника через JSON запрос
         }
 
         /// <summary>
         /// Через JSON-запрос возвращаем список сотрудников
         /// </summary>
-        /// <returns></returns>
+        /// <param name="aColumn">Колонка сортировки</param>
+        /// <param name="aDirection">Направление сортировки</param>
+        /// <param name="aCurrentPage">Номер страницы вывода данных</param>
+        /// <returns>JSON объект с данными выбранных сотрудников</returns>
         [Authorize]
-        public ActionResult GetEmployees(string aColumn, string aDirection, int? aCurrentPage, int? aTotalPage)
+        [HttpPost]
+        public ActionResult GetEmployees(string aColumn, string aDirection, int? aCurrentPage)
         {
-            //if (mEmployees == null) 
-            //{
-            //    mEmployees = db.Employees.ToList<Employee>();
-            //}
-            List<Employee> lEmployees = SortEmployeeList(db.Employees.ToList<Employee>(), aColumn, aDirection);
-            int lIndex = 10 * ((int)aCurrentPage - 1);
+            List<Employee> lEmployees = SortEmployeeList(db.Employees.ToList<Employee>(), aColumn, aDirection); // Сотрировка таблицы сотрудников
+            int lIndex = 10 * ((int)aCurrentPage - 1); 
             int lCount = db.Employees.Count() - lIndex < 10 ? db.Employees.Count() - lIndex : 10;
-            lEmployees = lEmployees.GetRange(lIndex, lCount);
+            lEmployees = lEmployees.GetRange(lIndex, lCount); // Выбор нужной страницы
             return Json(lEmployees, JsonRequestBehavior.AllowGet); // Передача таблицы через JSON запрос
         }
 
+        /// <summary>
+        /// Получение количества сотрудников в базе
+        /// </summary>
+        /// <returns>JSON объект с количеством сотрудников</returns>
         [Authorize]
         public ActionResult GetCountElement()
         {
@@ -94,14 +87,14 @@ namespace SCTestTask.Controllers
         [HttpPost]
         public ActionResult AddReplaceEmployee(Employee aEmployee)
         {
-            // Добавляем 12 часов для правильного отображения даты
+            // Добавляем 12 часов для правильного отображения даты рождения
             if (aEmployee.Birthday.Hour == 0) aEmployee.Birthday = aEmployee.Birthday.AddHours(12);
             if (aEmployee.Id == 0)
             {
-                db.Employees.Add(aEmployee);
+                db.Employees.Add(aEmployee); // Добавляем сотрудника
             }
             else
-            {
+            {  // Обновляем данные о сотруднике
                 Employee lEmployee = db.Employees.FirstOrDefault(x => x.Id == aEmployee.Id);
                 lEmployee.Name = aEmployee.Name;
                 lEmployee.Birthday = aEmployee.Birthday; 
@@ -130,22 +123,6 @@ namespace SCTestTask.Controllers
             }
             return Json(new { id = 0 });
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="aColumn"></param>
-        /// <param name="aDirection"></param>
-        /// <returns></returns>
-        [Authorize]
-        [HttpPost]
-        public JsonResult SetSortParametrs(string aColumn, string aDirection)
-        {
-            //mSortColumn = aColumn;
-            //mSortDirection = aDirection;
-            return Json(new { Column = aColumn, Direction = aDirection });
-        }
-
 
         /// <summary>
         /// Метод сортировки списка сотрудников по указанным параметрам

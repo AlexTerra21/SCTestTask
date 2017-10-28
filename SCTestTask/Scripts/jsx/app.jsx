@@ -1,36 +1,38 @@
-﻿class Employee extends React.Component{
- 
+﻿// Компонент для отображения строки таблицы
+class Employee extends React.Component{
     constructor(props){
         super(props);
-        this.state = {data: props.employee};
+        this.state = {data: props.employee}; // Данные о сотруднике
+        // Привязка методов для предотвращения потери контекста
         this.onRemoveClick = this.onRemoveClick.bind(this);
         this.onEditClick = this.onEditClick.bind(this);
-        
     }
+    // Нажатие удаления
     onRemoveClick(e){
         this.props.onRemove(this.state.data);
     }
+    // Нажатие редактирования
     onEditClick(e){
         this.props.onEdit(this.state.data)
     }
-    render(){
-		var pattern = /Date\(([^)]+)\)/;
-		var results = pattern.exec(this.state.data.Birthday);
-		//console.log(results);
-		var date = new Date(parseFloat(results[1]));
-		//console.log(date);
 
+    render(){
+        // Преобразование даты из формата JSON /Date(00000000...0000)/ в тип Date
+		var pattern = /Date\(([^)]+)\)/;  // Паттерн для разбивки строки
+		var results = pattern.exec(this.state.data.Birthday); // Строка преобразовывается в массив
+        var date = new Date(parseFloat(results[1])); // Искомое значение времени находится во 2-й ячейке массива
+        // Перед выводом даты переобразуем ее в формат зависящий от текущей локали.
         return <tr>
 					<td>{this.state.data.Name}</td>
-					<td><center>{date.toLocaleDateString()}</center></td>
+					<td><center>{date.toLocaleDateString()}</center></td> 
 					<td>{this.state.data.Email}</td>
 					<td>{this.state.data.Salary}</td>
 					<td><button title="Edit" onClick={this.onEditClick}><img src="Images/edit.png" width="11px"/> Edit</button></td>
 					<td><button title="Remove" onClick={this.onRemoveClick}><img src="Images/delete.png" width="11px"/> Remove</button></td>
-                </tr>
+        </tr>
     }
 }
-
+// Компонент для отображения кнопки переключения страницы
 class PageButton extends React.Component {
     constructor(props) { 
         super(props);
@@ -45,152 +47,135 @@ class PageButton extends React.Component {
         return <button onClick={this.goToPage.bind(this,this.state.i)}> {this.state.i} </button>
     }
 }
-
+// Главный компонент приложения
 class EmployeesList extends React.Component{
-    
-       constructor(props){
-           super(props);
-           this.state = { employees: [], count: 0, 
-                          sortColumn:'None', sortDirection:'None',
-                          currentPage : 1, totalPage: 0
-                        };
-    
-            this.onAddEmployee = this.onAddEmployee.bind(this);
-            this.onRemoveEmployee = this.onRemoveEmployee.bind(this);
-            this.onSetSortParams = this.onSetSortParams.bind(this);
-            this.getPageCount = this.getPageCount.bind(this);
-            this.goToPage = this.goToPage.bind(this);
-       }
-
+    constructor(props){
+        super(props);
+        this.state = { employees: [],       // Список отображаемых сотрудников
+                       count: 0,            // Количество сотрудников в базе
+                       sortColumn:'None',   // Колонка по которой производится сортировка
+                       sortDirection:'None',// Направление сортировка
+                       currentPage : 1,     // Номер отображаемой страницы
+                       totalPage: 0         // Общее количество страниц
+                    };
+        // Привязка методов для предотвращения потери контекста
+        this.onAddEmployee = this.onAddEmployee.bind(this);
+        this.onRemoveEmployee = this.onRemoveEmployee.bind(this);
+        this.onSetSortParams = this.onSetSortParams.bind(this);
+        this.getPageCount = this.getPageCount.bind(this);
+        this.goToPage = this.goToPage.bind(this);
+    }
+    // Инициализация компонента
     componentDidMount() {
-        this.initialize();
+        this.onInit();
+    }
+    // Загрузка данных
+    LoadData() {
+        var data = { 'aColumn': this.state.sortColumn,        // Колонка для сортировки 
+                     'aDirection': this.state.sortDirection,  // Направление сортировки
+                     'aCurrentPage' : this.state.currentPage  // № страницы выводимых данных
+                    };
+        $.ajax({
+            url:  this.props.getUrl,
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+            success: function (data) {
+                this.setState({ employees: data });        // Сохранение полученных данных в массив
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error(this.props.getUrl, status, err.toString());
+            }.bind(this)
+        });
+    }
+    // Инициализация компонента 
+    onInit() {
+    $.ajax({
+        url:  this.props.countUrl,
+        dataType: 'json',
+        success: function (data) {
+            this.setState({ count: data }, function () { // Получение количаства сотрудников ... 
+                this.setState({totalPage: this.getPageCount()}, function () {  // ... затем расчет количества страниц ...  
+                    this.LoadData();                       // ... затем загрузка данных
+                });
+            });
+        }.bind(this),
+        error: function (xhr, status, err) {
+            console.error(this.props.countUrl, status, err.toString());
+        }.bind(this)
+    });
+    }
+    // Установка новых параметров сортировки
+    onSetSortParams (column, direction) {
+        this.setState({sortColumn: column}, function () { // Установка колоки сортировки ... 
+            this.setState({sortDirection: direction}, function () { // ... затем направления сортировки ... 
+                this.LoadData();    // ... затем обновление данных
+            });
+        });
+    }
+    // Добавление сотрудника
+    onAddEmployee  () {
+    document.location.href = "/home/add?id=0"; // Переход на станицу добавления сотрудника
+    }
+    // Редактирование сотрудника
+    onEditEmployee  (employee)  {
+    document.location.href = "/home/edit?id="+employee.Id; // Переход на страницу редактироания сотрудника
     }
 
-       // загрузка данных
-       LoadData() {
-            console.log('ajaxLoadData');
-            var data = { 'aColumn': this.state.sortColumn,
-                         'aDirection': this.state.sortDirection,
-                         'aCurrentPage' : this.state.currentPage,
-                         'aTotalPage' : this.state.totalPage
-                       };
-            console.log(data.aColumn+data.aDirection);
-            $.ajax({
-                url:  this.props.getUrl,
-                type: 'POST',
-                dataType: 'json',
-                data: data,
-                success: function (data) {
-                    this.setState({ employees: data });
-                }.bind(this),
-                error: function (xhr, status, err) {
-                    console.error(this.props.getUrl, status, err.toString());
-                }.bind(this)
-            });
-       }
-
-       initialize() {
-        
+    // Удаление сотрудника
+    onRemoveEmployee  (employee)  { 
+        if (!confirm("Delete employee " + employee.Name + "?")) return;  // Запрос подтверждения
+        var data_id = { 'id': employee.Id };   // Id удляемого сотрудника
         $.ajax({
-            url:  this.props.countUrl,
+            url:  this.props.deleteUrl,
+            type: 'POST',
             dataType: 'json',
+            data: data_id,
             success: function (data) {
-                this.setState({ count: data }, function () {
-                    this.setState({totalPage: this.getPageCount()}, function () {
-                        this.LoadData();
-                    });
-                });
+                this.onInit();   // После удаления необходимо обновить данные таблицы
             }.bind(this),
             error: function (xhr, status, err) {
-                console.error(this.props.countUrl, status, err.toString());
+                console.error(this.props.deleteUrl, status, err.toString());
             }.bind(this)
         });
-       }
-
-
-       onSetSortParams (column, direction) {
-           console.log(column + direction);
-           this.setState({sortColumn: column}, function () {
-			   this.setState({sortDirection: direction}, function () {
-					console.log(this.state.sortColumn+this.state.sortDirection);
-					this.LoadData();
-			   });
-		   });
-       }
-
-       onAddEmployee  () {
-        //window.open('http://google.com');
-		document.location.href = "/home/add?id=0";
-       }
-
-       onEditEmployee  (employee)  {
-        document.location.href = "/home/edit?id="+employee.Id;
-       }
-
-       // удаление объекта
-       onRemoveEmployee  (employee)  { 
-            if (!confirm("Delete employee " + employee.Name + "?")) return;
-            var data_id = { 'id': employee.Id };
-            console.log('id = ' + employee.Id);
-            $.ajax({
-                url:  this.props.deleteUrl,
-                type: 'POST',
-                dataType: 'json',
-                data: data_id,
-                success: function (data) {
-                    this.initialize();
-                }.bind(this),
-                error: function (xhr, status, err) {
-                    console.error(this.props.deleteUrl, status, err.toString());
-                }.bind(this)
-            });
-       }
-
-       onLogout () {
-        $.ajax({
-            url:  this.props.logoutUrl,
-            dataType: 'json',
-            success: function (data) {
-                document.location.href = "/home";
-            }.bind(this),
-            error: function (xhr, status, err) {
-                console.error(this.props.logoutUrl, status, err.toString());
-            }.bind(this)
+    }
+    // Выход из системы
+    onLogout () {
+    $.ajax({
+        url:  this.props.logoutUrl,
+        dataType: 'json',
+        success: function (data) {
+            document.location.href = "/home";
+        }.bind(this),
+        error: function (xhr, status, err) {
+            console.error(this.props.logoutUrl, status, err.toString());
+        }.bind(this)
+    });
+    }
+    // Расчет количества страниц
+    getPageCount() {
+        return Math.ceil( this.state.count  / 10 ) ;
+    }
+    // Переход к указанной странице
+    goToPage (i) {
+        this.setState({currentPage: i}, function () { // Установка номера страницы ... 
+            this.LoadData();   // ... затем обновление данных таблицы
         });
-       }
+    }
 
-       getPageCount() {
-           var employeeCount = this.state.count;
-           console.log('employeeCount = ' + employeeCount);
-           return Math.ceil(employeeCount  / 10 ) ;
-       }
-
-    //    getEmployeeCount () {
-           
-    //     if (this.state.count)
-    //         return this.state.count;
-    //     else 
-    //         return 0;
-    //    }
-
-       goToPage (i) {
-           //alert('Page #' + i);
-           this.setState({currentPage: i}, function () {
-               this.LoadData();
-           });
-       }
-       
-
-       render(){
+    render(){
+        // Переменные для передачи методов в компоненты
         var remove = this.onRemoveEmployee;
         var edit = this.onEditEmployee; 
         var pageCount = this.getPageCount;
         var goToPage = this.goToPage;
+        // Инициализация массива для размещения кнопок-переходов страниц
         var pageButtons = [];
         for (var i = 0; i < this.getPageCount(); i++ ) pageButtons.push(i+1);
-        console.log(pageButtons);
-        console.log('EmployeesList this.state.count  = ' + this.state.count);
-        return <div>
+        if (this.state.employees.length == 0) // Проверка на наличие данных
+            return <p>Loading data...</p>; // Ожидание
+        else
+            return <div>
                 <h2>Employees list</h2>
                 <button title="Add" onClick={this.onAddEmployee}><img src="Images/add.png" width="12px"/> Add</button>
                 <hr/>
@@ -243,22 +228,20 @@ class EmployeesList extends React.Component{
                 <div>
                 {
                     pageButtons.map(function (i) {
-                       return <PageButton key={i} i={i} goToPage={goToPage}/>
+                        return <PageButton key={i} i={i} goToPage={goToPage}/>
                     })
                 }
                 </div>
-                
                 <br/>
                 <button title="Logout" onClick={this.onLogout.bind(this)}>Logout</button>
                 </div>
-        </div>;
-       }
-   }
-
+            </div>;
+    }
+}
 
 ReactDOM.render( 
-    <EmployeesList getUrl="/home/getemployees" postUrl="/home/addemploee" deleteUrl="/home/deleteemployee" countUrl="/home/getcountelement" 
-                   logoutUrl="/account/logoff" sortUrl="/home/setsortparametrs"/>,
+    <EmployeesList getUrl="/home/getemployees" postUrl="/home/addemploee" deleteUrl="/home/deleteemployee" 
+                   countUrl="/home/getcountelement" logoutUrl="/account/logoff" sortUrl="/home/setsortparametrs"/>,
     document.getElementById("content")
-  );
+);
 

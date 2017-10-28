@@ -14,7 +14,7 @@ namespace SCTestTask
     {
         protected void Application_Start()
         {
-            Database.SetInitializer(new EmployeeDbInitializer());
+            Database.SetInitializer(new EmployeeDbInitializer()); // Инициализация базы данных
 
 
             AreaRegistration.RegisterAllAreas();
